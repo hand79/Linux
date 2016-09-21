@@ -1,0 +1,15 @@
+
+-- find current war version --
+/usr/local/glassfish4/glassfish/bin/asadmin list-applications
+
+-- undeploy
+/usr/local/glassfish4/glassfish/bin/asadmin undeploy test-2.1.0
+
+-- deploy
+/usr/local/glassfish4/glassfish/bin/asadmin deploy --contextroot test ~/ocsg_deploy/20160731/test-2.1.2.war
+
+-- disable war
+/usr/local/glassfish4/glassfish/bin/asadmin denble test
+
+-- enable war
+/usr/local/glassfish4/glassfish/bin/asadmin enable  test
