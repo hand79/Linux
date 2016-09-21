@@ -14,7 +14,6 @@
 -- enable war
 /usr/local/glassfish4/glassfish/bin/asadmin enable  test
 
-
 -- start glassfish
 /usr/local/glassfish4/bin/asadmin start-domain 
 
