@@ -2,9 +2,14 @@
 -- find condition | order by |find_result_var tar zcvf file
 find . -newermt '2015-05-11 00:00:00' ! -newermt '2015-05-12 00:00:00' | sort | xargs tar zcvf 20150511.tgz 
 
-2. 功能:下載
+2. 上傳&下載
 scp 帳號@ip:目錄(來源)  .((當下目錄)目的)
-ex: scp maxhanchen@10.106.60.71:~/ocsg-cht-1.2.0.5.1.war .
+-- 上傳
+scp [file_name] [account]@[ip]:[path]
+scp test.war maxhanchen@10.106.34.48:~/
+-- 下載
+scp [account]@[ip]:[path] [local_path]
+scp maxhanchen@10.106.34.48:~/test.war .
 
 3. 增加使用者
 增加帳號: add user test 
@@ -16,13 +21,18 @@ mkdir /home/ocsms
 5.修改某個目錄的的owner及group
 chown -R addocsg:addocsg /home/ocsms
 
-
-6.藉由某個時間點找檔案數量 --
+6.藉由某個時間點找檔案數量
 ls |find . -newermt '2015-07-14 00:00:00' ! -newermt '2015-07-15 00:00:00' | wc -l
 
 7. 尋找這些檔案中有關 thread 這筆資料的數量
 grep Thread  server.log.* | wc -l
 
-8. Linux 下找出體積最大的檔案/目錄
+8. Linux 下找出最大的檔案/目錄
 du -a /home | sort -n -r | head -n 10
 du . -h --max-depth=1
+
+8. 壓縮 & 解壓縮
+-- 壓縮某個時間點的檔案
+find . -newermt '2015-10-12 00:00:00' ! -newermt '2015-10-13 00:00:00' -exec tar -zcvf test.tgz {} \;
+-- 解壓縮 
+tar -xcvf test.tgz
