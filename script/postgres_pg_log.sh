@@ -1,6 +1,6 @@
 #!/bin/sh
 # Program :
-#	tar ssnd log, and clean the log
+#	tar log, and clean the log
 # History : 2015/10/14		max 	First release
 execution_date_start=`date +"%Y-%m-%d %H:%M:%S"`
 tar_date_ago=`date +"%Y-%m-%d" -d'-3 day'`
