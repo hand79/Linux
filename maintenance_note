@@ -35,4 +35,4 @@ du . -h --max-depth=1
 -- 壓縮某個時間點的檔案
 find . -newermt '2015-10-12 00:00:00' ! -newermt '2015-10-13 00:00:00' -exec tar -zcvf test.tgz {} \;
 -- 解壓縮 
-tar -xcvf test.tgz
+tar -zxvf test.tgz
