@@ -1,0 +1,219 @@
+帳密:
+Root: Hadoop
+--------------------
+#網卡IP查詢
+ipconfig all
+
+192.168.184.1
+192.168.184.130
+----------------
+
+#如果root忘了密碼，進入到單用戶模式，root不用密碼就可以登入
+步驟:
+開機時在引導時輸入enter->看到介面輸入e->選擇kernel->
+輸入e-> 在這這行最後面寫 1->再輸入enter -> 再輸入小b(單用戶模式)->可以修改root密碼(passwd)
+
+#安全性疑慮:
+用這招必須在當台電腦或機房前才有用(遠程無用)
+
+#運行級別
+(3:命令 5:圖形) <<<若改錯級別改到0，利用單用戶模式去修改
+vim /etc/inittabdefault
+id:5:initdefault
+
+#時間同步
+ntpdate pool.ntp.org
+
+#find 找檔案
+find / -size +20M (大於)
+find / -size =20M (等於)
+find / -size -20M (小於)
+
+#history 指令歷史紀錄 
+
+#grep 
+-i 大小寫忽略 
+-n 行
+
+#chown 檔案 -> 改所有者
+#chgrp 檔案 -> 改組
+
+#文檔權限(10位數)
+0位表示類型
+ d 目錄
+ c 裝置
+ s socket
+ p 管道
+ l 鏈結
+ b 儲存設備
+1-3位 文件權限(rwx)---User
+4-6位 文件權限(rwx)---Group
+7-9位 文件權限(rwx)---Other
+
+#chmod 權限修改
+chmod  [{ugoa}{+-=}{rwx}] [文件或目錄] [mode=421]  [文件或目錄] 
+
+#任務排程
+crontab
+-e： edit task batch
+-l： list task batch
+-r： remove all current user's task batch
+(分、時、號、月、星期(0-7 0,7都代表星期日))
+* * * * *
+
+* 任何時間
+, 不連續時間
+- 連續時間
+*/n 每隔
+
+#lsblk(lsblk -f)  系統當前分區資訊
+
+#如何增加硬碟大小或掛載
+1. 虛擬機添加
+2. 分區 fdisk /dev/sdb
+3. 格式化 mkfs -t ext4 /dev/sdb1
+4. 掛載 mount /dev/sdb1 /home/newdisk(先創建目錄 /home/newdisk)
+5. 自動掛載(永久掛載，重啟仍然可用) 
+(1) vim /etc/fstab
+(2) 添加 /dev/sdb1/  /home/newdisk ext4 defaults 0 0
+(3) mount -a
+
+#卸載
+umount /dev/sdb1/
+
+#磁碟情況查詢
+df -h
+-a ：列出所有的文件系統，包括系統特有的 /proc 等文件系統；
+-k ：以 KBytes 的容量顯示各文件系統；
+-m ：以 MBytes 的容量顯示各文件系統；
+-h ：以人們較易閱讀的 GBytes, MBytes, KBytes 等格式自行顯示；
+-H ：以 M=1000K 取代 M=1024K 的進位方式；
+-T ：顯示文件系統類型，連同該 partition 的 filesystem 名稱 (例如 ext3) 也列出；
+-i ：不用硬盤容量，而以 inode 的數量來顯示
+du -h
+
+#PS查看系統中所有進程
+ps -aux（功能描述：查看系統中所有進程）
+:功能說明
+USER：該進程是由哪個用戶產生的
+PID：進程的ID號
+％CPU：該進程佔用CPU資源的百分比，佔用越高，進程越耗費資源;
+％MEM：該進程佔用物理內存的百分比，佔用越高，進程越耗費資源;
+VSZ：該進程佔用虛擬內存的大小，單位KB;
+RSS：該進程佔用實際物理內存的大小，單位KB;
+TTY：該進程是在哪個終端中運行的其中為tty1-TTY7代表本地控制台終端，為tty1-tty6是本地的字符界面終端，TTY7是圖形終端.PTS/0-255代表虛擬終端。
+STAT：進程狀態常見的狀態有：R：運行，S：睡眠，T：停止狀態，S：包含子進程，+：位於後台
+START：該進程的啟動時間
+TIME：該進程佔用CPU的運算時間，注意不是系統時間
+COMMAND：產生此進程的命令名
+
+@Tips:
+ps -aux | grep xxx
+ps -aux | more
+ps -ef | grep xxx (看父進程(PPID))
+
+
+#終止進程
+中止遠程登入(kill sshd服務)
+重起服務
+Killall 進程名
+Kill -9 強制殺掉一個終端
+
+#查看樹狀進程 pstree
+-p : 顯示進程的pid
+-u : 顯示進程的所屬用戶 
+
+#service 管理
+service start | stop | restart | reload | status
+註: centos 7.0後不再使用service，用systemctl
+案例:
+(1)防火牆
+service iptables stop
+service iptables status
+service iptables start
+註:
+這種只是臨時生效。
+若希望永久生效，需chkconfig指令
+
+查看服務名: 
+方式1: setup ->系統服務
+方式2: /etc/init.d/服務名稱
+ls -l /etc/init.d/
+
+開機流程說明:
+開機-> BIOS -> boot -> init進程 ->運行級別->運行級別應服務
+註:運行級別若不小心設置為0或7，進入單用戶模式修改
+@chkconfig 
+(1)查看服務(各個級別的情況) chkconfig --list | grep xxx
+(2) chkconfig 服務名 --list 
+(3) chkconfig --level 5 服務名 on/off (修改級別)
+
+#動態進程監控
+top與ps命令相似最大不同處是在執行一段時間後可以更新正在運行的進程
+top[選項]
+（1）選項：
+-d秒數：指定top命令每隔幾秒更新。默認是3秒在top命令的交互模式當中可以執行的命令：
+-i：使頂部不顯示任何閒置或者僵死進程。
+-p：通過指定監控進程ID來僅僅監控某個進程的狀態。
+-s：使頂部命令在安全模式中運行。這將去除交互命令所帶來的潛在危險。
+（2）操作選項：
+P：以CPU使用率排序，默認就是此項
+L：以內存的使用率排序
+N：以PID排序
+q：退出頂部
+
+#監控網路情況
+netstat
+-an 按照一定順序排列輸出
+-p	顯示那個進程在調用
+
+#RPM(RedHat Package Manager 紅帽的管理標準) 
+rpm -qa | more
+rpm -qa | grep xxx
+rpm -qi 軟體名，軟體資訊
+rpm -ql 軟體名，查詢包的文件
+rpm -qf 文件全路徑名，查詢文件所屬的軟體包
+rpm -qf /etc/passwd 查詢某個文件所屬的軟體包
+rpm -qf /root/install log
+rpm -e RPM包的名稱 卸載
+rpm -ivh RPM包的名稱
+#YUM
+在Fedora的和紅帽以及CentOS的中的殼前端軟件包管理器。基於RPM包管理，能夠從指定的服務器自動下載RPM包並且安裝，可以自動處理依賴性關係，並且一次安裝所有依賴的軟件包，無須繁瑣地一次次下載，安裝。
+yum install -y httpd（功能描述：安裝httpd並確認安裝）
+yum list（功能描述：列出所有可用的包和包組）
+yum clean all（功能描述：清除所有緩衝數據）
+yum deplist httpd（功能描述：列出一個包所有依賴的包）
+yum remove httpd（功能描述：刪除httpd）
+
+#VM網路配置(linux):
+(1)自動獲取IP
+(2)指定固定IP
+(a)vim /etc/sysconfig/network-scripts/ifcfg-eth0
+(b)內容需修改或添加
+ONBOOT=yes (自動啟動)
+BOOTPROTO=static (以靜態的方式獲取IP)
+IPADDR=192.168.184.130
+GATEWAY=192.168.184.2
+DNS1=192.168.184.2 (GATEWAY 和DNS一致即可)
+(c)service network restart (重起網路)
+	或 reboot (重啟機器)
+
+#修改主機名(主機名不要有"_")
+(a)hostname 當前主機名
+(b)vim /etc/sysconfig/network
+NETWORKING=yes
+NETWORKING_IPV6=no
+HOSTNAME=hadoop100
+
+@Linux 連通IP映射:
+	vim /etc/hosts
+	192.168.1.100 hadoop100
+@windows 連通IP映射:
+	C:\Windows\System32\drivers\etc\hosts
+	192.168.1.100 hadoop100
+  
+#Linux 常用命令(netstat, top, lsblk, find, ps ,chkconfig)
+top 查看內存
+netstat -tunlp 端口占用
+ps -aux | grep 進程
+iotop 查看io讀寫狀況(須裝yum install iotop)
